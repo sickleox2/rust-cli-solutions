@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/catr/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/catr/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/headr/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/headr/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/wcr/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/wcr/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/uniqr/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/uniqr/tests" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/catr/target" />
+      <excludeFolder url="file://$MODULE_DIR$/headr/target" />
+      <excludeFolder url="file://$MODULE_DIR$/wcr/target" />
+      <excludeFolder url="file://$MODULE_DIR$/uniqr/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
