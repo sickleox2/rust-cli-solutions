@@ -3,9 +3,8 @@ extern crate core;
 use clap::{App, Arg};
 use std::error::Error;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, BufWriter, Lines, Read, Write};
+use std::io::{self, BufRead, BufReader, Read, Write};
 
-use std::iter::Peekable;
 
 type MyResult<T> = Result<T, Box<dyn Error>>;
 
@@ -52,12 +51,6 @@ fn open(path: &String) -> MyResult<Box<dyn BufRead>> {
         _ => Ok(Box::new(BufReader::new(File::open(path)?))),
     }
 }
-fn peek_next(iterator: &mut Peekable<Lines<Box<dyn BufRead>>>) -> MyResult<String> {
-    match iterator.peek() {
-        Some(line) => Ok(String::from(line.as_ref().unwrap())),
-        None => Ok(String::from("EOF")),
-    }
-}
 
 
 pub fn run(args: Config) -> MyResult<()> {
@@ -65,30 +58,46 @@ pub fn run(args: Config) -> MyResult<()> {
     match open(&args.input_file) {
         Err(err) => panic!("{}: {}", &args.input_file, err),
         Ok(mut file) => {
-            let mut file_lines = file.lines().peekable();
-            let mut consecutive: usize = 1;
+            
+            let mut buffer = String::new();
+
+            file.read_to_string(&mut buffer)?;
+            let mut cursor = io::Cursor::new(buffer);
+            let mut buf = String::new();
+            let mut consecutive  = 0;
             let mut result = Vec::new();
-            while let Some(line) = file_lines.next() {
-                let current = line.unwrap();
-                let next: String = peek_next(&mut file_lines)?;
-                if current == next {
-                    consecutive += 1;
-                } else {
-                    if next == *"EOF" {
+            let mut previous= String::new();
+            let mut counter = 0;
+            while let Ok(n) = cursor.read_line(&mut buf) {
+                if counter == 0 {
+                    previous = buf.clone();
+                }
+                if n == 0 {
+                    if consecutive != 0 {
                         if args.count {
-                            result.push(format!("   {} {}", consecutive, current));
-                        } else if !args.count {
-                            result.push(format!("{}", current));
-                        }
-                    } else {
-                        if args.count {
-                            result.push(format!("   {} {}\n", consecutive, current));
-                        } else if !args.count {
-                            result.push(format!("{}\n", current));
+                            result.push(format!("   {} {}", consecutive, previous));
+                        } else {
+                            result.push(previous);
                         }
                     }
-                    consecutive = 1;
+                    break;
                 }
+                if !buf.is_empty() {
+                    if previous.trim() != buf.trim() {
+                        if args.count {
+                            result.push(format!("   {} {}", consecutive, previous));
+                        } else {
+                            result.push(previous);
+                        }
+                        consecutive = 1;
+                    }
+                    else {
+                        consecutive += 1;
+                    }
+                }
+                previous = buf.clone();
+                buf.clear();
+                counter += 1
             }
             let out_path = args.output_file.unwrap();
             if out_path != *"" {
