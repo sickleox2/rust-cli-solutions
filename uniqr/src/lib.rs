@@ -65,9 +65,6 @@ pub fn run(args: Config) -> MyResult<()> {
     match open(&args.input_file) {
         Err(err) => panic!("{}: {}", &args.input_file, err),
         Ok(mut file) => {
-            let mut buffer = String::new();
-            file.read_to_string(&mut buffer)?;
-            let last = buffer.chars().last().unwrap_or('Ế');
             let mut file_lines = file.lines().peekable();
             let mut consecutive: usize = 1;
             let mut result = Vec::new();
@@ -77,7 +74,7 @@ pub fn run(args: Config) -> MyResult<()> {
                 if current == next {
                     consecutive += 1;
                 } else {
-                    if next == *"EOF" && last != '\n' {
+                    if next == *"EOF" {
                         if args.count {
                             result.push(format!("   {} {}", consecutive, current));
                         } else if !args.count {
